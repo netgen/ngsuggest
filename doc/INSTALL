@@ -1,0 +1,52 @@
+Installing ngSuggest
+
+
+Requirements:
+- ezfind extension
+- ezjscore extension (for jquery)
+- ezwebin/ezflow extension
+
+
+Installing:
+1. Extract the ngsuggest extension, and place it in the extensions folder.
+
+2. Enable the extension in eZ Publish. Do this by opening settings/override/site.ini.append.php
+   and add in the [ExtensionSettings] block (before ezwebin):
+   ActiveExtensions[]=ngsuggest
+
+3. Preparing 'ngsuggest_text' solr field for faceting (not obligatory):
+    - Merge content of share/schema.xml into extension/ezfind/java/solr/conf/schema.xml (DO NOT OVERWRITE IT!)
+    - Restart your solr servlet (jetty, tomcat,...) if needed
+    - Reindex solr data
+
+4. Adding jQuery support.
+
+    a) If jQuery is already used extension/ngsuggest/design/ezwebin/templates/page_head_script.tpl can be deleted
+
+    b) If not, but ezwebin template page_head_script.tpl is used, this step can be skipped (page_head_script.tpl included in extension loads jQuery over ezjscore)
+
+    c) Or download jQuery and load it directly through JavaScriptSettings in design.ini
+
+5. Preparing templates and defining $search_id (id of the search text field)
+
+    a) If default ezwebin search form is used (page_header_searchbox.tpl) this step can be skipped (it is overridden by ngsuggest version). In this case $search_id is: searchtext
+
+    b) If that form is not used it can be included. In this case $search_id is also: searchtext
+
+    c) If more search forms are needed they can be included like this:
+    {include uri='design:ngsuggest/searchform.tpl' form_id="[id_of_the_search_form]" search_id="[id_of_the_search_field]"}
+    ($form_id and $search_id should be unique HTML ids)
+
+    d) If there is already a search form, search field can be included like this:
+    {include uri='design:ngsuggest/searchfield.tpl' form_id="[id_of_the_search_form]" search_id="[id_of_the_search_field]" size="[input_size]" search_name="[name_of_the_search_field]" search_style="[extra_css_style_classes]"}
+
+6. Configure settings/ngsuggest.ini depending on the needs. For every search field ini group can be defined. $search_id is used for the name of the group. There is a [default] group with default settings.
+    Following settings can be configured per group:
+        - Limit: maximum number of suggestions
+        - RootNode: root node id to limit the search
+        - Section: array of section id to limit the search
+        - Classes: array of class id to limit the search
+        - FacetField: what field will be used for facets (ngsuggest_text or ezf_df_text or other)
+
+7. Clear cache.
+
